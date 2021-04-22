@@ -1,0 +1,49 @@
+Methods on Server  (Need This Data By Post)
+--------------------------
+1.CreateTeam(Team team, int roomId)    => Enter Team{Name , Description}
+2.JoinTeam(string teamCode) 
+3.GetMessageHistory(int teamId)
+4.SendToTeam(string message, int teamId)
+5.LeaveTeam(int teamId)
+6.DeleteTeam(int teamId)
+
+
+----------------------------------------------------------------------------------------------
+Methods on Clients
+--------------------
+1a. "ReceiveMessageOnAdd"($" Chat Group Called {JoinChatOfTeamByDefault} Created")  //want to Show this String Message to Only User Who Create Group
+2b. "addTeam"(team)                         //new Team(team.id, team.name,team.description) => Data Want to represent 
+3c. "ReceiveMessageOnJoin"($"User: {user.UserName} Join Group of {JoinChatOfTeam} ")    //want to Show this String Message to Group on Join
+4d. "newMessage"(messageView)   //new ChatMessage(messageView.Content, messageView.Timestamp, messageView.FromUser, messageView.ToChat) 
+
+
+* on Failed ."onError"(message)  => Want to represent this message 
+
+
+
+Tracing 
+___________
+
+
+-First: User want To CreateTeam in specific Room so he pass => "TeamName , TeamDescription" and the "RoomId" =>"1" , Get Chat Of This Team by "TeamId" (on Create Team ,  Chat Create By Default)
+ and Caller RecieveMessageOnCreateTeam => "1a"
+ * "onFail Happen" => onError("Couldn't create team: ")  on the Caller
+
+
+-Secound: another User Want to join Team by "TeamCode" so add in TeamMembers => "2" , then Get Team by "TeamCode" after GetTeam Get "Chat of This Team"
+ add User in GroupChat and Tell all Clients in This Group so When any Person Join This Group see this Message => "3c" 
+ * "onFail Happen" => onError("You failed to join the Team!") on the Caller
+
+
+-Third: User Want to Send To Team by Pass => "mssage","teamId" => "4" , Then Get Chat Of This Team and Send this Message on Group => "4d"
+* "onFail Happen" => onError("Message not send! Message should be 1-500 characters.") on the Caller
+
+-Fourth: Users who joined Group for Old Time Can See All Messages on This GroupofTeam => by passing "teamId" => "3"
+* "onFail Happen" => Give Him Empty List
+
+-Fifth: User Want To Leave Team  By "TeamId" => "5", Then Delete From TeamMember and Remove Him From Chat Group
+ * "onFail Happen" => onError("You failed to Leave the Team Unexpected Error !") on the Caller
+ 
+
+-sixth: Creator Of Team Or Creator Of Room Want to Delete Team by "TeamId" => "6"
+*  "onFail Happen" => onError("Can't delete this chat Team. Only owner can delete this Team.") on the Caller
